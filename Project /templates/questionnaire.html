@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <title>Dynamic Questionnaire</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #343a40;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 50px;
+            margin-bottom: 50px;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-body {
+            padding: 30px;
+        }
+        .card-title {
+            color: #007bff;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .form-control {
+            border: 2px solid #ced4da;
+            border-radius: 10px;
+            padding: 12px;
+            transition: border-color 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: none;
+        }
+        .btn {
+            border-radius: 25px;
+            padding: 12px 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        .progress {
+            height: 10px;
+            margin-bottom: 30px;
+        }
+        .progress-bar {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-5">Dynamic Questionnaire</h1>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <form id="dynamicForm" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            
+            {% for question in questions|slice:":10" %}
+            <div class="card question-card" data-question="{{ forloop.counter }}">
+                <div class="card-body">
+                    <h3 class="card-title">
+                        <i class="fas fa-question-circle me-2"></i>
+                        Question {{ forloop.counter }}
+                    </h3>
+                    <p class="lead mb-4">{{ question.text }}</p>
+                    <textarea class="form-control" name="answer_{{ question.id }}" rows="4" required placeholder="Type your answer here..."></textarea>
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="text-center mt-5">
+                <button type="submit" class="btn btn-primary me-3">
+                    <i class="fas fa-paper-plane me-2"></i>Submit Answers
+                </button>
+                <a href="{% url 'index' %}" class="btn btn-secondary">
+                    <i class="fas fa-redo me-2"></i>Retake Survey
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.getElementById('dynamicForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            this.submit();
+        });
+
+        const textareas = document.querySelectorAll('textarea');
+        const progressBar = document.querySelector('.progress-bar');
+        const totalQuestions = 10;
+
+        textareas.forEach(textarea => {
+            textarea.addEventListener('input', updateProgress);
+        });
+
+        function updateProgress() {
+            const answeredQuestions = Array.from(textareas).filter(t => t.value.trim() !== '').length;
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            progressBar.style.width = `${progress}%`;
+            progressBar.setAttribute('aria-valuenow', progress);
+        }
+    </script>
+</body>
+</html>

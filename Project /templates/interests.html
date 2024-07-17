@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>Enter Your Interest</title>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333333;
+            font-family: 'Roboto', sans-serif;
+        }
+        .container {
+            background-color: #ffffff;
+            max-width: 500px;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border-color: #3498db;
+            padding: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+            transform: translateY(-2px);
+        }
+        .form-group label {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .form-control {
+            border-color: #bdc3c7;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        .form-control:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Enter Your Interest</h2>
+        <form method="post" action="{% url 'index' %}" id="interestForm">
+            {% csrf_token %}
+            <input type="hidden" name="user_id" value="{{ user_id }}">
+            <div class="form-group">
+                <label for="interest">Your Interest:</label>
+                <input type="text" id="interest" name="interest" class="form-control" placeholder="E.g., Web Devlopment, Data Science, Ui/Ux" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block mt-4">Submit</button>
+        </form>
+    </div>
+    <div class="modal fade" id="errorModal" tabindex="-1" role="dialog" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="errorModalLabel">Error</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body" id="errorModalBody">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById('interestForm').addEventListener('submit', function(event) {
+            const interestInput = document.getElementById('interest').value.trim();
+            if (!interestInput) {
+                event.preventDefault();
+                alert('Please enter a valid interest.');
+            }
+        });
+    </script>
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorMessage = "{{ error_message|escapejs }}";
+            if (errorMessage) {
+                alert(errorMessage);
+            }
+        });
+    </script> -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var errorMessage = "{{ error_message|escapejs }}";
+            if (errorMessage) {
+                document.getElementById('errorModalBody').textContent = errorMessage;
+                $('#errorModal').modal('show');
+            }
+        });
+    </script>
+</body>
+</html>
